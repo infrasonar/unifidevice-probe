@@ -1,5 +1,6 @@
 import aiohttp
 import logging
+from urllib.parse import quote
 from libprobe.asset import Asset
 from libprobe.exceptions import IgnoreResultException
 from lib.unificonn import get_session
@@ -40,7 +41,8 @@ async def check_unifiguest(
     if mac.startswith('?'):
         logging.error(f'invalid mac address for {asset}')
         raise IgnoreResultException
-    url = f'/api/s/{site_name}/stat/device/{mac}'
+
+    url = f'/api/s/{quote(site_name)}/stat/device/{quote(mac)}'
     session = await get_session(asset, asset_config, check_config)
     async with aiohttp.ClientSession(**session) as session:
         async with session.get(url, ssl=ssl) as resp:
