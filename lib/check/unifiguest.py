@@ -102,7 +102,6 @@ async def check_unifiguest(
         'model': device.get('model'),  # str
         'ip': device.get('ip'),  # str
         'isolated': device.get('isolated'),  # bool
-        'model': device.get('model'),  # str
         'uplink': device.get('uplink', {}).get('name'),  # str
         'version': device.get('version'),  # str
         'uptime': device.get('uptime'),  # int
