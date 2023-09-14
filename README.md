@@ -38,6 +38,7 @@ asset:
   check: "unifiguest"
   config:
     controller: "192.168.0.1"
+    port: 443
     mac: "02:42:21:c1:2b:1c"
     site: "default"
 ```

@@ -2,20 +2,25 @@ import aiohttp
 import logging
 import os
 from libprobe.asset import Asset
-from libprobe.exceptions import CheckException
+from libprobe.exceptions import CheckException, IgnoreResultException
 from lib.asset_cache import AssetCache
 
 
 async def login(asset: Asset, asset_config: dict, check_config: dict) -> dict:
     logging.debug(f'login on asset {asset}')
 
-    address = check_config.get('address')
-    if not address:
-        address = asset.name
+    controller = check_config.get('controller')
+    if controller is None:
+        msg = 'missing controller in collector configuration'
+        raise CheckException(msg)
+
     port = check_config.get('port', 443)
     ssl = check_config.get('ssl', True)
     username = asset_config.get('username')
     password = asset_config.get('password')
+    if None in (username, password):
+        logging.error(f'missing credentails for {asset}')
+        raise IgnoreResultException
 
     auth_data = {
         'username': username,
@@ -23,13 +28,13 @@ async def login(asset: Asset, asset_config: dict, check_config: dict) -> dict:
     }
     async with aiohttp.ClientSession() as session:
         async with session.post(
-            f'https://{address}:{port}/api/login',
+            f'https://{controller}:{port}/api/login',
             json=auth_data,
             ssl=ssl,
         ) as resp:
             if resp.status // 100 == 2:
                 return {
-                    'base_url': f'https://{address}:{port}',
+                    'base_url': f'https://{controller}:{port}',
                     'cookies': resp.cookies,
                 }
             else:
