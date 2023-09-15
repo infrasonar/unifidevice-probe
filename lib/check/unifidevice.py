@@ -32,8 +32,8 @@ async def check_unifidevice(
     asset_config: dict,
     check_config: dict
 ) -> dict:
-    site_name = check_config.get('site', 'default')
-    ssl = check_config.get('ssl', True)
+    site = check_config.get('site', 'default')
+    ssl = check_config.get('ssl', False)
     mac = check_config.get('mac')
     if mac in (None, ''):
         logging.error(f'missing mac address for {asset}')
@@ -42,7 +42,7 @@ async def check_unifidevice(
         logging.error(f'invalid mac address for {asset}')
         raise IgnoreResultException
 
-    url = f'/api/s/{quote(site_name)}/stat/device/{quote(mac)}'
+    url = f'/api/s/{quote(site, safe="")}/stat/device/{quote(mac, safe="")}'
     session = await get_session(asset, asset_config, check_config)
     async with aiohttp.ClientSession(**session) as session:
         async with session.get(url, ssl=ssl) as resp:
