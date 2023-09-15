@@ -31,7 +31,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/infrasonar/unifiguest-probe
+          images: ${{ env.REGISTRY }}/infrasonar/unifidevice-probe
 
       - name: Get the version
         id: get_version
@@ -44,5 +44,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/infrasonar/unifiguest-probe:${{ steps.get_version.outputs.VERSION }},ghcr.io/infrasonar/unifiguest-probe:unstable
+          tags: ghcr.io/infrasonar/unifidevice-probe:${{ steps.get_version.outputs.VERSION }},ghcr.io/infrasonar/unifidevice-probe:unstable
           labels: ${{ steps.meta.outputs.labels }}

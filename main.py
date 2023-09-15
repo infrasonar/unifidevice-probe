@@ -1,12 +1,12 @@
 from libprobe.probe import Probe
-from lib.check.unifiguest import check_unifiguest
+from lib.check.unifidevice import check_unifidevice
 from lib.version import __version__ as version
 
 
 if __name__ == '__main__':
     checks = {
-        'unifiguest': check_unifiguest,
+        'unifidevice': check_unifidevice,
     }
 
-    probe = Probe('unifiguest', version, checks)
+    probe = Probe('unifidevice', version, checks)
     probe.start()

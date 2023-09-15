@@ -27,7 +27,7 @@ def to_int(val):
     return int(val)
 
 
-async def check_unifiguest(
+async def check_unifidevice(
     asset: Asset,
     asset_config: dict,
     check_config: dict

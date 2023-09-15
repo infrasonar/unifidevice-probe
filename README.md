@@ -1,7 +1,7 @@
-[![CI](https://github.com/infrasonar/unifiguest-probe/workflows/CI/badge.svg)](https://github.com/infrasonar/unifiguest-probe/actions)
-[![Release Version](https://img.shields.io/github/release/infrasonar/unifiguest-probe)](https://github.com/infrasonar/unifiguest-probe/releases)
+[![CI](https://github.com/infrasonar/unifidevice-probe/workflows/CI/badge.svg)](https://github.com/infrasonar/unifidevice-probe/actions)
+[![Release Version](https://img.shields.io/github/release/infrasonar/unifidevice-probe)](https://github.com/infrasonar/unifidevice-probe/releases)
 
-# InfraSonar UniFi Guest Probe
+# InfraSonar UniFi device Probe
 
 ## Environment variable
 
@@ -20,7 +20,7 @@ Variable            | Default                        | Description
 ## Docker build
 
 ```
-docker build -t unifiguest-probe . --no-cache
+docker build -t unifidevice-probe . --no-cache
 ```
 
 ## Dry run
@@ -35,7 +35,7 @@ Create a yaml file, for example _(test.yaml)_:
 ```yaml
 asset:
   name: "foo.local"
-  check: "unifiguest"
+  check: "unifidevice"
   config:
     controller: "192.168.0.1"
     port: 443
