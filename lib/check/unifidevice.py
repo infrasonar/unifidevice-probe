@@ -97,7 +97,7 @@ async def check_unifidevice(
 
     device = [{
         'name': device['name'],  # str
-        'mac': device.get('mac' ),  # str
+        'mac': device.get('mac'),  # str
         'state': DEVICE_STATE.get(device.get('state')),  # str
         'adopted': device.get('adopted'),  # bool
         'type': device.get('type'),  # str
