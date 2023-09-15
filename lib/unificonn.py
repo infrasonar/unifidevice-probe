@@ -15,7 +15,7 @@ async def login(asset: Asset, asset_config: dict, check_config: dict) -> dict:
         raise CheckException(msg)
 
     port = check_config.get('port', 443)
-    ssl = check_config.get('ssl', True)
+    ssl = check_config.get('ssl', False)
     username = asset_config.get('username')
     password = asset_config.get('password')
     if None in (username, password):
