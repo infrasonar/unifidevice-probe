@@ -6,21 +6,9 @@ from libprobe.exceptions import CheckException, IgnoreResultException
 from lib.asset_cache import AssetCache
 
 
-async def login(asset: Asset, asset_config: dict, check_config: dict) -> dict:
-    logging.debug(f'login on asset {asset}')
-
-    controller = check_config.get('controller')
-    if controller is None:
-        msg = 'missing controller in collector configuration'
-        raise CheckException(msg)
-
-    port = check_config.get('port', 443)
-    ssl = check_config.get('ssl', False)
-    username = asset_config.get('username')
-    password = asset_config.get('password')
-    if None in (username, password):
-        logging.error(f'missing credentails for {asset}')
-        raise IgnoreResultException
+async def login(controller: str, port: int, ssl: bool,
+                username: str, password: str) -> dict:
+    logging.debug(f'login on controller {controller}')
 
     auth_data = {
         'username': username,
@@ -43,16 +31,35 @@ async def login(asset: Asset, asset_config: dict, check_config: dict) -> dict:
 
 async def get_session(asset: Asset, asset_config: dict,
                       check_config: dict) -> dict:
-    session, _ = AssetCache.get_value(asset)
+
+    controller = check_config.get('controller')
+    if controller is None:
+        msg = 'missing controller in collector configuration'
+        raise CheckException(msg)
+
+    port = check_config.get('port', 443)
+    ssl = check_config.get('ssl', False)
+    username = asset_config.get('username')
+    password = asset_config.get('password')
+    if None in (username, password):
+        logging.error(f'missing credentails for {asset}')
+        raise IgnoreResultException
+
+    # we use everything what identifies a connection for an asset as key
+    # of the cached 'connection'
+    connection_args = (controller, port, ssl, username, password)
+    session = AssetCache.get_value(connection_args)
     if session:
         return session
 
     try:
-        session = await login(asset, asset_config, check_config)
+        session = await login(*connection_args)
     except ConnectionError:
         raise CheckException('unable to connect')
     except Exception:
         raise
     else:
-        AssetCache.set_value(asset, session)
+        # when connection is older than 3600 we request new 'connection'
+        max_age = 3600
+        AssetCache.set_value(connection_args, session, max_age)
     return session
