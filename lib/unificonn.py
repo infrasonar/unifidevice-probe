@@ -3,7 +3,7 @@ import logging
 import os
 from libprobe.asset import Asset
 from libprobe.exceptions import CheckException, IgnoreResultException
-from lib.asset_cache import AssetCache
+from lib.connection_cache import ConnectionCache
 
 
 async def login(controller: str, port: int, ssl: bool,
@@ -48,7 +48,7 @@ async def get_session(asset: Asset, asset_config: dict,
     # we use everything what identifies a connection for an asset as key
     # of the cached 'connection'
     connection_args = (controller, port, ssl, username, password)
-    session = AssetCache.get_value(connection_args)
+    session = ConnectionCache.get_value(connection_args)
     if session:
         return session
 
@@ -61,5 +61,5 @@ async def get_session(asset: Asset, asset_config: dict,
     else:
         # when connection is older than 3600 we request new 'connection'
         max_age = 3600
-        AssetCache.set_value(connection_args, session, max_age)
+        ConnectionCache.set_value(connection_args, session, max_age)
     return session

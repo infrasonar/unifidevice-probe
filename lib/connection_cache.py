@@ -1,7 +1,7 @@
 import time
 
 
-class AssetCache:
+class ConnectionCache:
     _all = {}
 
     @classmethod
