@@ -42,7 +42,7 @@ async def get_session(asset: Asset, asset_config: dict,
     username = asset_config.get('username')
     password = asset_config.get('password')
     if None in (username, password):
-        logging.error(f'missing credentails for {asset}')
+        logging.error(f'missing credentials for {asset}')
         raise IgnoreResultException
 
     # we use everything what identifies a connection for an asset as key
