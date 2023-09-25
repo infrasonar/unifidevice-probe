@@ -28,6 +28,12 @@ def to_int(val):
     return int(val)
 
 
+def to_float(val):
+    if val is None:
+        return
+    return float(val)
+
+
 async def check_unifidevice(
     asset: Asset,
     asset_config: dict,
@@ -54,8 +60,6 @@ async def check_unifidevice(
     device = data['data'][0]
     stat = device['stat']['ap']
 
-    # TODO: missing system-stats/cpu and mem . (str -> float) (percentage?)
-
     # same metrics is are available in the vap_table but with (most likely)
     # aggregated values
     radio = [
@@ -66,25 +70,25 @@ async def check_unifidevice(
             'cu_total': radio.get('cu_total'),  # int
             'radio': radio.get('radio'),  # str
             'mac_filter_rejections':
-                int(stat.get(f'{radio["name"]}-mac_filter_rejections')),  # int
-            'rx_crypts': int(stat.get(f'{radio["name"]}-rx_crypts')),  # int
-            'rx_dropped': int(stat.get(f'{radio["name"]}-rx_dropped')),  # int
-            'rx_errors': int(stat.get(f'{radio["name"]}-rx_errors')),  # int
-            'rx_frags': int(stat.get(f'{radio["name"]}-rx_frags')),  # int
-            'tx_bytes': int(stat.get(f'{radio["name"]}-tx_bytes')),  # int
-            'tx_dropped': int(stat.get(f'{radio["name"]}-tx_dropped')),  # int
-            'tx_errors': int(stat.get(f'{radio["name"]}-tx_errors')),  # int
-            'tx_packets': int(stat.get(f'{radio["name"]}-tx_packets')),  # int
-            'tx_retries': int(stat.get(f'{radio["name"]}-tx_retries')),  # int
+            to_int(stat.get(f'{radio["name"]}-mac_filter_rejections')),  # int
+            'rx_bytes': to_int(stat.get(f'{radio["name"]}-rx_bytes')),  # int
+            'rx_crypts': to_int(stat.get(f'{radio["name"]}-rx_crypts')),  # int
+            'rx_dropped':
+            to_int(stat.get(f'{radio["name"]}-rx_dropped')),  # int
+            'rx_errors': to_int(stat.get(f'{radio["name"]}-rx_errors')),  # int
+            'rx_frags': to_int(stat.get(f'{radio["name"]}-rx_frags')),  # int
+            'tx_bytes': to_int(stat.get(f'{radio["name"]}-tx_bytes')),  # int
+            'tx_dropped':
+            to_int(stat.get(f'{radio["name"]}-tx_dropped')),  # int
+            'tx_errors': to_int(stat.get(f'{radio["name"]}-tx_errors')),  # int
+            'tx_packets':
+            to_int(stat.get(f'{radio["name"]}-tx_packets')),  # int
+            'tx_power': radio.get('tx_power'),  # int
+            'tx_retries': radio.get('tx_retries'),  # int
         }
         for radio in device['radio_table_stats'] if radio.get('name')
     ]
     radio_complete = len(radio) == len(device['radio_table_stats'])
-    # TODO:
-    #   missing:
-    #       - rx_bytes
-    #       - tx_power
-    #   if len not equal, CheckException('At least one Radio without a name')
 
     vap = [
         {
@@ -100,19 +104,16 @@ async def check_unifidevice(
             'rx_dropped': vap.get('rx_dropped'),  # int
             'rx_errors': vap.get('rx_errors'),  # int
             'rx_frags': vap.get('rx_frags'),  # int
+            'tx_bytes': vap.get('tx_bytes'),  # int
+            'tx_dropped': vap.get('tx_dropped'),  # int
+            'tx_errors': vap.get('tx_errors'),  # int
+            'tx_power': vap.get('tx_power'),  # int
         }
         for vap in device['vap_table'] if 'name' if vap.get('name')
     ]
     vap_complete = len(vap) == len(device['vap_table'])
-    # TODO:
-    #   missing:
-    #       - tx_bytes,
-    #       - tx_dropped,
-    #       - tx_errors,
-    #       - tx_power
-    # if len not equal, CheckException('At least one VAP without a name')
 
-    device = [{
+    item = {
         'name': device['name'],  # str
         'mac': device.get('mac'),  # str
         'state': DEVICE_STATE.get(device.get('state')),  # str
@@ -124,10 +125,12 @@ async def check_unifidevice(
         'uplink': device.get('uplink', {}).get('name'),  # str
         'version': device.get('version'),  # str
         'uptime': device.get('uptime'),  # int
-    }]
+        'cpu': to_float(device.get('system-stats', {}).get('cpu')),
+        'mem': to_float(device.get('system-stats', {}).get('mem')),
+    }
 
     state = {
-        'device': device,
+        'device': [item],
         'radio': radio,
         'vap': vap,
     }
