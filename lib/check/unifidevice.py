@@ -74,8 +74,9 @@ async def check_unifidevice(
             'tx_packets': int(stat.get(f'{radio["name"]}-tx_packets')),  # int
             'tx_retries': int(stat.get(f'{radio["name"]}-tx_retries')),  # int
         }
-        for radio in device['radio_table_stats']
+        for radio in device['radio_table_stats'] if radio.get('name')
     ]
+    # if len not equal, CheckException('At least one VAP without a name')
 
     vap = [
         {
@@ -92,8 +93,10 @@ async def check_unifidevice(
             'rx_errors': vap.get('rx_errors'),  # int
             'rx_frags': vap.get('rx_frags'),  # int
         }
-        for vap in device['vap_table']
+        for vap in device['vap_table'] if 'name' if vap.get('name')
     ]
+    # if len not equal, CheckException('At least one VAP without a name')
+
 
     device = [{
         'name': device['name'],  # str
