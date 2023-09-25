@@ -53,6 +53,8 @@ async def check_unifidevice(
     device = data['data'][0]
     stat = device['stat']['ap']
 
+    # TODO: missing system-stats/cpu and mem . (str -> float) (percentage?)
+
     # same metrics is are available in the vap_table but with (most likely)
     # aggregated values
     radio = [
@@ -76,7 +78,11 @@ async def check_unifidevice(
         }
         for radio in device['radio_table_stats'] if radio.get('name')
     ]
-    # if len not equal, CheckException('At least one VAP without a name')
+    # TODO:
+    #   missing:
+    #       - rx_bytes
+    #       - tx_power
+    #   if len not equal, CheckException('At least one Radio without a name')
 
     vap = [
         {
@@ -95,8 +101,13 @@ async def check_unifidevice(
         }
         for vap in device['vap_table'] if 'name' if vap.get('name')
     ]
+    # TODO:
+    #   missing:
+    #       - tx_bytes,
+    #       - tx_dropped,
+    #       - tx_errors,
+    #       - tx_power
     # if len not equal, CheckException('At least one VAP without a name')
-
 
     device = [{
         'name': device['name'],  # str
