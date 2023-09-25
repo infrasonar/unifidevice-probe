@@ -2,6 +2,7 @@ import aiohttp
 import logging
 from urllib.parse import quote
 from libprobe.asset import Asset
+from libprobe.exceptions import IncompleteResultException
 from libprobe.exceptions import IgnoreResultException
 from lib.unificonn import get_session
 
@@ -76,7 +77,7 @@ async def check_unifidevice(
         }
         for radio in device['radio_table_stats'] if radio.get('name')
     ]
-    # if len not equal, CheckException('At least one VAP without a name')
+    radio_complete = len(radio) == len(device['radio_table_stats'])
 
     vap = [
         {
@@ -95,8 +96,7 @@ async def check_unifidevice(
         }
         for vap in device['vap_table'] if 'name' if vap.get('name')
     ]
-    # if len not equal, CheckException('At least one VAP without a name')
-
+    vap_complete = len(vap) == len(device['vap_table'])
 
     device = [{
         'name': device['name'],  # str
@@ -112,8 +112,15 @@ async def check_unifidevice(
         'uptime': device.get('uptime'),  # int
     }]
 
-    return {
+    state = {
         'device': device,
         'radio': radio,
         'vap': vap,
     }
+    if not radio_complete:
+        raise IncompleteResultException('At least one radio without a name',
+                                        result=state)
+    if not vap_complete:
+        raise IncompleteResultException('At least one VAP without a name',
+                                        result=state)
+    return state
