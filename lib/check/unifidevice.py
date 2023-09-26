@@ -22,6 +22,12 @@ DEVICE_STATE = {
 }
 
 
+def uint(val):
+    if not isinstance(val, int) or val < 0:
+        return
+    return val
+
+
 def to_int(val):
     if val is None:
         return
@@ -68,7 +74,9 @@ async def check_unifidevice(
             'cu_self_rx': radio.get('cu_self_rx'),  # int
             'cu_self_tx': radio.get('cu_self_tx'),  # int
             'cu_total': radio.get('cu_total'),  # int
+            'num_sta': radio.get('num_sta'),  # int
             'radio': radio.get('radio'),  # str
+            'satisfaction': uint(radio.get('satisfaction')),  # int/optional
             'mac_filter_rejections':
             to_int(stat.get(f'{radio["name"]}-mac_filter_rejections')),  # int
             'rx_bytes': to_int(stat.get(f'{radio["name"]}-rx_bytes')),  # int
@@ -109,6 +117,7 @@ async def check_unifidevice(
             'tx_dropped': vap.get('tx_dropped'),  # int
             'tx_errors': vap.get('tx_errors'),  # int
             'tx_power': vap.get('tx_power'),  # int
+            'satisfaction': uint(vap.get('satisfaction')),  # int/optional
         }
         for vap in device['vap_table'] if 'name' if vap.get('name')
     ]
@@ -128,6 +137,7 @@ async def check_unifidevice(
         'uptime': device.get('uptime'),  # int
         'cpu': to_float(device.get('system-stats', {}).get('cpu')),
         'mem': to_float(device.get('system-stats', {}).get('mem')),
+        'satisfaction': uint(device.get('satisfaction')),  # int/optional
     }
 
     state = {
