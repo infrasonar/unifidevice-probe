@@ -22,6 +22,12 @@ DEVICE_STATE = {
 }
 
 
+def pint(val):
+    if not isinstance(val, int) or val < 0:
+        return
+    return val
+
+
 def to_int(val):
     if val is None:
         return
@@ -68,7 +74,9 @@ async def check_unifidevice(
             'cu_self_rx': radio.get('cu_self_rx'),  # int
             'cu_self_tx': radio.get('cu_self_tx'),  # int
             'cu_total': radio.get('cu_total'),  # int
+            'num_sta': radio.get('num_sta'),  # int
             'radio': radio.get('radio'),  # str
+            'satisfaction': pint(radio.get('satisfaction')),  # int/optional
             'mac_filter_rejections':
             to_int(stat.get(f'{radio["name"]}-mac_filter_rejections')),  # int
             'rx_bytes': to_int(stat.get(f'{radio["name"]}-rx_bytes')),  # int
