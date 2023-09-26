@@ -130,6 +130,7 @@ async def check_unifidevice(
         'adopted': device.get('adopted'),  # bool
         'type': device.get('type'),  # str
         'model': device.get('model'),  # str
+        'num_sta': device.get('num_sta'),  # int
         'ip': device.get('ip'),  # str
         'isolated': device.get('isolated'),  # bool
         'uplink': device.get('uplink', {}).get('name'),  # str
