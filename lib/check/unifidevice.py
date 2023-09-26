@@ -58,7 +58,7 @@ async def check_unifidevice(
             assert len(data['data']), 'device not not found'
 
     device = data['data'][0]
-    stat = device['stat']['ap']
+    stat = device['stat'].get('ap', {})
 
     # same metrics is are available in the vap_table but with (most likely)
     # aggregated values
