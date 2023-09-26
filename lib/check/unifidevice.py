@@ -84,7 +84,8 @@ async def check_unifidevice(
             'tx_packets':
             to_int(stat.get(f'{radio["name"]}-tx_packets')),  # int
             'tx_power': radio.get('tx_power'),  # int
-            'tx_retries': to_int(stat.get(f'{radio["name"]}-tx_retries')),  # int
+            'tx_retries':
+            to_int(stat.get(f'{radio["name"]}-tx_retries')),  # int
         }
         for radio in device['radio_table_stats'] if radio.get('name')
     ]
