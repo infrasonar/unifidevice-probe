@@ -65,63 +65,76 @@ async def check_unifidevice(
 
     device = data['data'][0]
     stat = device['stat'].get('ap', {})
+    state = {}
+    radio_complete, vap_complete = True, True
 
     # same metrics is are available in the vap_table but with (most likely)
     # aggregated values
-    radio = [
-        {
-            'name': radio['name'],  # str
-            'cu_self_rx': radio.get('cu_self_rx'),  # int
-            'cu_self_tx': radio.get('cu_self_tx'),  # int
-            'cu_total': radio.get('cu_total'),  # int
-            'num_sta': radio.get('num_sta'),  # int
-            'radio': radio.get('radio'),  # str
-            'satisfaction': uint(radio.get('satisfaction')),  # int/optional
-            'mac_filter_rejections':
-            to_int(stat.get(f'{radio["name"]}-mac_filter_rejections')),  # int
-            'rx_bytes': to_int(stat.get(f'{radio["name"]}-rx_bytes')),  # int
-            'rx_crypts': to_int(stat.get(f'{radio["name"]}-rx_crypts')),  # int
-            'rx_dropped':
-            to_int(stat.get(f'{radio["name"]}-rx_dropped')),  # int
-            'rx_errors': to_int(stat.get(f'{radio["name"]}-rx_errors')),  # int
-            'rx_frags': to_int(stat.get(f'{radio["name"]}-rx_frags')),  # int
-            'tx_bytes': to_int(stat.get(f'{radio["name"]}-tx_bytes')),  # int
-            'tx_dropped':
-            to_int(stat.get(f'{radio["name"]}-tx_dropped')),  # int
-            'tx_errors': to_int(stat.get(f'{radio["name"]}-tx_errors')),  # int
-            'tx_packets':
-            to_int(stat.get(f'{radio["name"]}-tx_packets')),  # int
-            'tx_power': radio.get('tx_power'),  # int
-            'tx_retries':
-            to_int(stat.get(f'{radio["name"]}-tx_retries')),  # int
-        }
-        for radio in device['radio_table_stats'] if radio.get('name')
-    ]
-    radio_complete = len(radio) == len(device['radio_table_stats'])
+    if 'radio_table_stats' in device:
+        radio = [
+            {
+                'name': radio['name'],  # str
+                'cu_self_rx': radio.get('cu_self_rx'),  # int
+                'cu_self_tx': radio.get('cu_self_tx'),  # int
+                'cu_total': radio.get('cu_total'),  # int
+                'num_sta': radio.get('num_sta'),  # int
+                'radio': radio.get('radio'),  # str
+                'satisfaction':
+                uint(radio.get('satisfaction')),  # int/optional
+                'mac_filter_rejections':   # int
+                to_int(stat.get(f'{radio["name"]}-mac_filter_rejections')),
+                'rx_bytes':
+                to_int(stat.get(f'{radio["name"]}-rx_bytes')),  # int
+                'rx_crypts':
+                to_int(stat.get(f'{radio["name"]}-rx_crypts')),  # int
+                'rx_dropped':
+                to_int(stat.get(f'{radio["name"]}-rx_dropped')),  # int
+                'rx_errors':
+                to_int(stat.get(f'{radio["name"]}-rx_errors')),  # int
+                'rx_frags':
+                to_int(stat.get(f'{radio["name"]}-rx_frags')),  # int
+                'tx_bytes':
+                to_int(stat.get(f'{radio["name"]}-tx_bytes')),  # int
+                'tx_dropped':
+                to_int(stat.get(f'{radio["name"]}-tx_dropped')),  # int
+                'tx_errors':
+                to_int(stat.get(f'{radio["name"]}-tx_errors')),  # int
+                'tx_packets':
+                to_int(stat.get(f'{radio["name"]}-tx_packets')),  # int
+                'tx_power': radio.get('tx_power'),  # int
+                'tx_retries':
+                to_int(stat.get(f'{radio["name"]}-tx_retries')),  # int
+            }
+            for radio in device['radio_table_stats'] if radio.get('name')
+        ]
+        radio_complete = len(radio) == len(device['radio_table_stats'])
+        state['radio'] = radio
 
-    vap = [
-        {
-            'name': vap['name'],  # str
-            'bssid': vap.get('bssid'),  # str
-            'channel': vap.get('channel'),  # int
-            'essid': vap.get('essid'),  # str
-            'extchannel': vap.get('extchannel'),  # int/optional
-            'num_sta': vap.get('num_sta'),  # int
-            'radio_name': vap.get('radio_name'),  # str + ref
-            'rx_bytes': vap.get('rx_bytes'),  # int
-            'rx_crypts': vap.get('rx_crypts'),  # int
-            'rx_dropped': vap.get('rx_dropped'),  # int
-            'rx_errors': vap.get('rx_errors'),  # int
-            'rx_frags': vap.get('rx_frags'),  # int
-            'tx_bytes': vap.get('tx_bytes'),  # int
-            'tx_dropped': vap.get('tx_dropped'),  # int
-            'tx_errors': vap.get('tx_errors'),  # int
-            'tx_power': vap.get('tx_power'),  # int
-            'satisfaction': uint(vap.get('satisfaction')),  # int/optional
-        }
-        for vap in device['vap_table'] if 'name' if vap.get('name')
-    ]
-    vap_complete = len(vap) == len(device['vap_table'])
+    if 'vap_table' in device:
+        vap = [
+            {
+                'name': vap['name'],  # str
+                'bssid': vap.get('bssid'),  # str
+                'channel': vap.get('channel'),  # int
+                'essid': vap.get('essid'),  # str
+                'extchannel': vap.get('extchannel'),  # int/optional
+                'num_sta': vap.get('num_sta'),  # int
+                'radio_name': vap.get('radio_name'),  # str + ref
+                'rx_bytes': vap.get('rx_bytes'),  # int
+                'rx_crypts': vap.get('rx_crypts'),  # int
+                'rx_dropped': vap.get('rx_dropped'),  # int
+                'rx_errors': vap.get('rx_errors'),  # int
+                'rx_frags': vap.get('rx_frags'),  # int
+                'tx_bytes': vap.get('tx_bytes'),  # int
+                'tx_dropped': vap.get('tx_dropped'),  # int
+                'tx_errors': vap.get('tx_errors'),  # int
+                'tx_power': vap.get('tx_power'),  # int
+                'satisfaction': uint(vap.get('satisfaction')),  # int/optional
+            }
+            for vap in device['vap_table'] if 'name' if vap.get('name')
+        ]
+        vap_complete = len(vap) == len(device['vap_table'])
+        state['vap'] = vap
 
     item = {
         'name': device['name'],  # str
@@ -141,11 +154,8 @@ async def check_unifidevice(
         'satisfaction': uint(device.get('satisfaction')),  # int/optional
     }
 
-    state = {
-        'device': [item],
-        'radio': radio,
-        'vap': vap,
-    }
+    state['device'] = [item]
+
     if not radio_complete:
         raise IncompleteResultException('At least one radio without a name',
                                         result=state)
