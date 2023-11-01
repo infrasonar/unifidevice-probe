@@ -14,19 +14,22 @@ async def login(controller: str, port: int, ssl: bool,
         'username': username,
         'password': password,
     }
-    async with aiohttp.ClientSession() as session:
-        async with session.post(
-            f'https://{controller}:{port}/api/login',
-            json=auth_data,
-            ssl=ssl,
-        ) as resp:
-            if resp.status // 100 == 2:
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                f'https://{controller}:{port}/api/auth/login',
+                json=auth_data,
+                ssl=ssl,
+            ) as resp:
+                resp.raise_for_status()
                 return {
                     'base_url': f'https://{controller}:{port}',
                     'cookies': resp.cookies,
                 }
-            else:
-                raise CheckException('login failed')
+    except Exception as e:
+        msg = str(e) or type(e).__name__
+        raise CheckException(f'login failed: {msg}')
 
 
 async def get_session(asset: Asset, asset_config: dict,
