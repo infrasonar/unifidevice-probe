@@ -55,8 +55,9 @@ async def check_unifidevice(
         logging.error(f'invalid mac address for {asset}')
         raise IgnoreResultException
 
-    url = f'/api/s/{quote(site, safe="")}/stat/device/{quote(mac, safe="")}'
-    session = await get_session(asset, asset_config, check_config)
+    session, is_unifi_os = await get_session(asset, asset_config, check_config)
+    uri = '/proxy/network/api/s/' if is_unifi_os else '/api/s/'
+    url = f'{uri}{quote(site, safe="")}/stat/device/{quote(mac, safe="")}'
     async with aiohttp.ClientSession(**session) as session:
         async with session.get(url, ssl=ssl) as resp:
             resp.raise_for_status()
