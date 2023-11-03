@@ -220,7 +220,11 @@ async def check_unifidevice(
         'total_used_power': device.get('total_used_power'),  # float/opt
         'config_network_type': config_network.get('type'),  # str/opt, eg dhcp
         'bonding_enabled': config_network.get('bonding_enabled'),  # bool/opt
+        'kernel_version': device.get('kernel_version'),  # str/opt
+        'serial': device.get('serial'),  # str/opt
+        'license_state': device.get('license_state'),  # str/opt
     }
+
 
     state['device'] = [item]
 
