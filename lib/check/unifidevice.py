@@ -65,13 +65,14 @@ async def check_unifidevice(
             assert len(data['data']), 'device not not found'
 
     device = data['data'][0]
-    stat = device['stat'].get('ap', {})
     state = {}
-    radio_complete, vap_complete = True, True
+    radio_complete, vap_complete, port_complete = True, True, True
+    mac_duplicate = set()
 
     # same metrics is are available in the vap_table but with (most likely)
     # aggregated values
     if 'radio_table_stats' in device:
+        stat = device['stat'].get('ap', {})
         radio = [
             {
                 'name': radio['name'],  # str
@@ -130,13 +131,76 @@ async def check_unifidevice(
                 'tx_dropped': vap.get('tx_dropped'),  # int
                 'tx_errors': vap.get('tx_errors'),  # int
                 'tx_power': vap.get('tx_power'),  # int
-                'satisfaction': uint(vap.get('satisfaction')),  # int/optional
+                'satisfaction': uint(vap.get('satisfaction')),  # int/opt
             }
             for vap in device['vap_table'] if 'name' if vap.get('name')
         ]
         vap_complete = len(vap) == len(device['vap_table'])
         state['vap'] = vap
 
+    if 'port_table' in device:
+        mac_set = set()  # check for duplicates
+        mac_table = []
+        port_table = []
+        for port in device['port_table']:
+            if port.get('name') is None:
+                port_complete = False
+                continue
+            port_table.append({
+                'name': port['name'],  # str
+                'poe_caps': port['poe_caps'],  # int
+                'poe_mode': port['poe_mode'],  # str, e.g. auto
+                'port_poe': port['port_poe'],  # bool
+                'poe_good': port['poe_good'],  # bool/opt
+                'poe_power': to_float(port.get('poe_power')),  # float/opt
+                'media': port['media'],  # str, e.g. GE
+                'op_mode': port['op_mode'],  # str, e.g. switch
+                'autoneg': port['autoneg'],  # bool
+                'speed_caps': port['speed_caps'],  # int
+                'forward': port['forward'],  # str, e.g. all
+                'enable': port['enable'],  # bool
+                'full_duplex': port['full_duplex'],  # bool
+                'is_uplink': port['is_uplink'],  # bool
+                'up': port['up'],  # bool
+                'masked': port['masked'],  # bool
+                'flowctrl_rx': port['flowctrl_rx'],  # bool
+                'flowctrl_tx': port['flowctrl_tx'],  # bool
+                'jumbo': port['jumbo'],  # bool
+                'speed': port['speed'],  # int  e.g. 100 or 1000
+                'stp_pathcost': port['stp_pathcost'],  # int
+                'stp_state': port['stp_state'],  # str e.g. forwarding
+                'satisfaction': port.get('satisfaction'),  # int/opt
+                'rx_broadcast': port['rx_broadcast'],  # int
+                'rx_bytes': port['rx_bytes'],  # int
+                'rx_dropped': port['rx_dropped'],  # int
+                'rx_errors': port['rx_errors'],  # int
+                'rx_multicast': port['rx_multicast'],  # int
+                'rx_packets': port['rx_packets'],  # int
+                'tx_broadcast': port['tx_broadcast'],  # int
+                'tx_bytes': port['tx_bytes'],  # int
+                'tx_dropped': port['tx_dropped'],  # int
+                'tx_errors': port['tx_errors'],  # int
+                'tx_multicast': port['tx_multicast'],  # int
+                'tx_packets': port['tx_packets'],  # int
+            })
+            for mac in port['mac_table']:
+                if mac['mac'] in mac_set:
+                    mac_duplicate.add(mac['mac'])
+                    continue
+                mac_set.add(mac['mac'])
+                mac_table.append({
+                    'name': mac['mac'],  # str, mac-address
+                    'port_name': port['name'],  # str, -> reference port table
+                    'age': mac['age'],  # int
+                    'ip': mac.get('ip'),  # str/opt
+                    'uptime': mac['uptime'],  # int
+                    'vlan': mac['vlan'],  # int
+                    'static': mac['static'],  # bool
+                })
+        state['port'] = port_table
+        state['mac'] = mac_table
+
+    config_network = device.get('config_network', {})
     item = {
         'name': device['name'],  # str
         'mac': device.get('mac'),  # str
@@ -153,6 +217,9 @@ async def check_unifidevice(
         'cpu': to_float(device.get('system-stats', {}).get('cpu')),
         'mem': to_float(device.get('system-stats', {}).get('mem')),
         'satisfaction': uint(device.get('satisfaction')),  # int/optional
+        'total_used_power': device.get('total_used_power'),  # float/opt
+        'config_network_type': config_network.get('type'),  # str/opt, eg dhcp
+        'bonding_enabled': config_network.get('bonding_enabled'),  # bool/opt
     }
 
     state['device'] = [item]
@@ -163,4 +230,15 @@ async def check_unifidevice(
     if not vap_complete:
         raise IncompleteResultException('At least one VAP without a name',
                                         result=state)
+    if not port_complete:
+        raise IncompleteResultException('At least one Port without a name',
+                                        result=state)
+    if mac_duplicate:
+        if len(mac_duplicate) > 5:
+            msg = f'{len(mac_duplicate)} duplicates found'
+        else:
+            msg = f'{", ".join(mac_duplicate)}'
+        raise IncompleteResultException(
+            f'The same MAC address detected on multiple ports ({msg})',
+            result=state)
     return state
