@@ -149,9 +149,9 @@ async def check_unifidevice(
             port_table.append({
                 'name': port['name'],  # str
                 'poe_caps': port['poe_caps'],  # int
-                'poe_mode': port['poe_mode'],  # str, e.g. auto
+                'poe_mode': port.get('poe_mode'),  # str/opt, e.g. auto
                 'port_poe': port['port_poe'],  # bool
-                'poe_good': port['poe_good'],  # bool/opt
+                'poe_good': port.get('poe_good'),  # bool/opt
                 'poe_power': to_float(port.get('poe_power')),  # float/opt
                 'media': port['media'],  # str, e.g. GE
                 'op_mode': port['op_mode'],  # str, e.g. switch
