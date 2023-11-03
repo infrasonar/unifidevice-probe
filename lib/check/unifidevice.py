@@ -225,7 +225,6 @@ async def check_unifidevice(
         'license_state': device.get('license_state'),  # str/opt
     }
 
-
     state['device'] = [item]
 
     if not radio_complete:
