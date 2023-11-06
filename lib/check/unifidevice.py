@@ -138,6 +138,35 @@ async def check_unifidevice(
         vap_complete = len(vap) == len(device['vap_table'])
         state['vap'] = vap
 
+    if 'uplink' in device:
+        uplink = device['uplink']
+        item = {
+            'name': uplink['name'],  # str
+            'full_duplex': uplink['full_duplex'],  # bool
+            'ip': uplink.get('ip'),  # str/opt
+            'mac': uplink['mac'],  # str
+            'max_speed': uplink['max_speed'],  # int
+            'netmask': uplink.get('netmask'),  # str/opt
+            'num_port': uplink['num_port'],  # int
+            'port_idx': uplink.get('port_idx'),  # int/opt
+            'rx_bytes': uplink['rx_bytes'],  # int
+            'rx_dropped': uplink['rx_dropped'],  # int
+            'rx_errors': uplink['rx_errors'],  # int
+            'rx_multicast': uplink['rx_multicast'],  # int
+            'rx_packets': uplink['rx_packets'],  # int
+            'speed': uplink['speed'],  # int
+            'tx_bytes': uplink['tx_bytes'],  # int,
+            'tx_dropped': uplink['tx_dropped'],  # int
+            'tx_errors': uplink['tx_errors'],  # int
+            'tx_packets': uplink['tx_packets'],  # int
+            'type': uplink['type'],  # str, eg. wire
+            'uplink_device_name': uplink.get('uplink_device_name'),  # str/opt
+            'uplink_mac': uplink.get('uplink_mac'),  # str/opt
+            'uplink_remote_port': uplink.get('uplink_remote_port'),  # int/opt
+            'uplink_source': uplink.get('uplink_source'),  # str/opt
+        }
+        state['uplink'] = [item]
+
     if 'port_table' in device:
         mac_set = set()  # check for duplicates
         mac_table = []
@@ -148,6 +177,7 @@ async def check_unifidevice(
                 continue
             port_table.append({
                 'name': port['name'],  # str
+                'port_idx': port.get('port_idx'),  # int/opt
                 'poe_caps': port['poe_caps'],  # int
                 'poe_mode': port.get('poe_mode'),  # str/opt, e.g. auto
                 'port_poe': port['port_poe'],  # bool
