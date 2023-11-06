@@ -148,7 +148,7 @@ async def check_unifidevice(
             'max_speed': uplink['max_speed'],  # int
             'netmask': uplink.get('netmask'),  # str/opt
             'num_port': uplink['num_port'],  # int
-            'port_idx': uplink['port_idx'],  # int
+            'port_idx': uplink.get('port_idx'),  # int/opt
             'rx_bytes': uplink['rx_bytes'],  # int
             'rx_dropped': uplink['rx_dropped'],  # int
             'rx_errors': uplink['rx_errors'],  # int
@@ -177,7 +177,7 @@ async def check_unifidevice(
                 continue
             port_table.append({
                 'name': port['name'],  # str
-                'port_idx': port['port_idx'],  # int
+                'port_idx': port.get('port_idx'),  # int/opt
                 'poe_caps': port['poe_caps'],  # int
                 'poe_mode': port.get('poe_mode'),  # str/opt, e.g. auto
                 'port_poe': port['port_poe'],  # bool
