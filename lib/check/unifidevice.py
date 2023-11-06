@@ -145,7 +145,7 @@ async def check_unifidevice(
             'full_duplex': uplink['full_duplex'],  # bool
             'ip': uplink.get('ip'),  # str/opt
             'mac': uplink['mac'],  # str
-            'max_speed': uplink['max_speed'],  #int
+            'max_speed': uplink['max_speed'],  # int
             'netmask': uplink.get('netmask'),  # str/opt
             'num_port': uplink['num_port'],  # int
             'port_idx': uplink['port_idx'],  # int
@@ -160,9 +160,9 @@ async def check_unifidevice(
             'tx_errors': uplink['tx_errors'],  # int
             'tx_packets': uplink['tx_packets'],  # int
             'type': uplink['type'],  # str, eg. wire
-            'uplink_device_name': uplink.get('uplink_device_name'),  #str/opt
+            'uplink_device_name': uplink.get('uplink_device_name'),  # str/opt
             'uplink_mac': uplink.get('uplink_mac'),  # str/opt
-            'uplink_remote_port': uplink.get('uplink_remote_port'),  #int/opt
+            'uplink_remote_port': uplink.get('uplink_remote_port'),  # int/opt
             'uplink_source': uplink.get('uplink_source'),  # str/opt
         }
         state['uplink'] = [item]
