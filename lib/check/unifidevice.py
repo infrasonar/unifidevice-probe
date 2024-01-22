@@ -187,7 +187,7 @@ async def check_unifidevice(
                 'op_mode': port['op_mode'],  # str, e.g. switch
                 'autoneg': port['autoneg'],  # bool
                 'speed_caps': port.get('speed_caps'),  # int/opt
-                'forward': port['forward'],  # str, e.g. all
+                'forward': port.get('forward'),  # str, e.g. all/opt
                 'enable': port['enable'],  # bool
                 'full_duplex': port['full_duplex'],  # bool
                 'is_uplink': port['is_uplink'],  # bool
