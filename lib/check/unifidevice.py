@@ -133,7 +133,7 @@ async def check_unifidevice(
                 'tx_power': vap.get('tx_power'),  # int
                 'satisfaction': uint(vap.get('satisfaction')),  # int/opt
             }
-            for vap in device['vap_table'] if 'name' if vap.get('name')
+            for vap in device['vap_table'] if vap.get('name')
         ]
         vap_complete = len(vap) == len(device['vap_table'])
         state['vap'] = vap
