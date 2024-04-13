@@ -213,7 +213,7 @@ async def check_unifidevice(
                 'tx_multicast': port['tx_multicast'],  # int
                 'tx_packets': port['tx_packets'],  # int
             })
-            for mac in port['mac_table']:
+            for mac in port.get('mac_table', []):
                 if mac['mac'] in mac_set:
                     mac_duplicate.add(mac['mac'])
                     continue
