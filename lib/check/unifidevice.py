@@ -144,7 +144,7 @@ async def check_unifidevice(
             'name': uplink['name'],  # str
             'full_duplex': uplink['full_duplex'],  # bool
             'ip': uplink.get('ip'),  # str/opt
-            'mac': uplink['mac'],  # str
+            'mac': uplink.get('mac'),  # str
             'max_speed': uplink['max_speed'],  # int
             'netmask': uplink.get('netmask'),  # str/opt
             'num_port': uplink['num_port'],  # int
@@ -195,10 +195,10 @@ async def check_unifidevice(
                 'masked': port['masked'],  # bool
                 'flowctrl_rx': port['flowctrl_rx'],  # bool
                 'flowctrl_tx': port['flowctrl_tx'],  # bool
-                'jumbo': port['jumbo'],  # bool
+                'jumbo': port.get('jumbo'),  # bool
                 'speed': port['speed'],  # int  e.g. 100 or 1000
-                'stp_pathcost': port['stp_pathcost'],  # int
-                'stp_state': port['stp_state'],  # str e.g. forwarding
+                'stp_pathcost': port.get('stp_pathcost'),  # int
+                'stp_state': port.get('stp_state'),  # str e.g. forwarding
                 'satisfaction': port.get('satisfaction'),  # int/opt
                 'rx_broadcast': port['rx_broadcast'],  # int
                 'rx_bytes': port['rx_bytes'],  # int
