@@ -133,7 +133,7 @@ async def check_unifidevice(
                 'tx_power': vap.get('tx_power'),  # int
                 'satisfaction': uint(vap.get('satisfaction')),  # int/opt
             }
-            for vap in device['vap_table'] if 'name' if vap.get('name')
+            for vap in device['vap_table'] if vap.get('name')
         ]
         vap_complete = len(vap) == len(device['vap_table'])
         state['vap'] = vap
@@ -213,7 +213,7 @@ async def check_unifidevice(
                 'tx_multicast': port['tx_multicast'],  # int
                 'tx_packets': port['tx_packets'],  # int
             })
-            for mac in port['mac_table']:
+            for mac in port.get('mac_table', []):
                 if mac['mac'] in mac_set:
                     mac_duplicate.add(mac['mac'])
                     continue
