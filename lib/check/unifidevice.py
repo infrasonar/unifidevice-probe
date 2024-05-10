@@ -1,5 +1,6 @@
 import aiohttp
 import logging
+from typing import Optional
 from urllib.parse import quote
 from libprobe.asset import Asset
 from libprobe.exceptions import IncompleteResultException
@@ -38,6 +39,10 @@ def to_float(val):
     if val is None:
         return
     return float(val)
+
+
+def get_uplink_name(uplink: dict) -> Optional[str]:
+    return uplink.get('name', uplink.get('mac', uplink.get('ip'))) or None
 
 
 async def check_unifidevice(
@@ -140,32 +145,36 @@ async def check_unifidevice(
 
     if 'uplink' in device:
         uplink = device['uplink']
-        item = {
-            'name': uplink['name'],  # str
-            'full_duplex': uplink['full_duplex'],  # bool
-            'ip': uplink.get('ip'),  # str/opt
-            'mac': uplink.get('mac'),  # str
-            'max_speed': uplink['max_speed'],  # int
-            'netmask': uplink.get('netmask'),  # str/opt
-            'num_port': uplink['num_port'],  # int
-            'port_idx': uplink.get('port_idx'),  # int/opt
-            'rx_bytes': uplink['rx_bytes'],  # int
-            'rx_dropped': uplink['rx_dropped'],  # int
-            'rx_errors': uplink['rx_errors'],  # int
-            'rx_multicast': uplink['rx_multicast'],  # int
-            'rx_packets': uplink['rx_packets'],  # int
-            'speed': uplink['speed'],  # int
-            'tx_bytes': uplink['tx_bytes'],  # int,
-            'tx_dropped': uplink['tx_dropped'],  # int
-            'tx_errors': uplink['tx_errors'],  # int
-            'tx_packets': uplink['tx_packets'],  # int
-            'type': uplink['type'],  # str, eg. wire
-            'uplink_device_name': uplink.get('uplink_device_name'),  # str/opt
-            'uplink_mac': uplink.get('uplink_mac'),  # str/opt
-            'uplink_remote_port': uplink.get('uplink_remote_port'),  # int/opt
-            'uplink_source': uplink.get('uplink_source'),  # str/opt
-        }
-        state['uplink'] = [item]
+        name = get_uplink_name(uplink)
+        if name is not None:
+            item = {
+                'name': name,  # str
+                'full_duplex': uplink['full_duplex'],  # bool
+                'ip': uplink.get('ip'),  # str/opt
+                'mac': uplink.get('mac'),  # str
+                'max_speed': uplink['max_speed'],  # int
+                'netmask': uplink.get('netmask'),  # str/opt
+                'num_port': uplink['num_port'],  # int
+                'port_idx': uplink.get('port_idx'),  # int/opt
+                'rx_bytes': uplink['rx_bytes'],  # int
+                'rx_dropped': uplink['rx_dropped'],  # int
+                'rx_errors': uplink['rx_errors'],  # int
+                'rx_multicast': uplink['rx_multicast'],  # int
+                'rx_packets': uplink['rx_packets'],  # int
+                'speed': uplink['speed'],  # int
+                'tx_bytes': uplink['tx_bytes'],  # int,
+                'tx_dropped': uplink['tx_dropped'],  # int
+                'tx_errors': uplink['tx_errors'],  # int
+                'tx_packets': uplink['tx_packets'],  # int
+                'type': uplink['type'],  # str, eg. wire
+                'uplink_device_name': uplink.get('uplink_device_name'),  # str/opt
+                'uplink_mac': uplink.get('uplink_mac'),  # str/opt
+                'uplink_remote_port': uplink.get('uplink_remote_port'),  # int/opt
+                'uplink_source': uplink.get('uplink_source'),  # str/opt
+            }
+            state['uplink'] = [item]
+        else:
+            logging.warning(f'failed to read uplink `name`; {asset}')
 
     if 'port_table' in device:
         mac_set = set()  # check for duplicates
@@ -241,7 +250,7 @@ async def check_unifidevice(
         'num_sta': device.get('num_sta'),  # int
         'ip': device.get('ip'),  # str
         'isolated': device.get('isolated'),  # bool
-        'uplink': device.get('uplink', {}).get('name'),  # str
+        'uplink': get_uplink_name(device.get('uplink', {})),  # str
         'version': device.get('version'),  # str
         'uptime': device.get('uptime'),  # int
         'cpu': to_float(device.get('system-stats', {}).get('cpu')),
