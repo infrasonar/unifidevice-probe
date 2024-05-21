@@ -147,29 +147,32 @@ async def check_unifidevice(
         uplink = device['uplink']
         name = get_uplink_name(uplink)
         if name is not None:
+            # many metrics are optional because the uplink can be wireless
             item = {
                 'name': name,  # str
-                'full_duplex': uplink['full_duplex'],  # bool
+                'full_duplex': uplink.get('full_duplex'),  # bool/opt
                 'ip': uplink.get('ip'),  # str/opt
-                'mac': uplink.get('mac'),  # str
-                'max_speed': uplink['max_speed'],  # int
+                'mac': uplink.get('mac'),  # str/opt
+                'max_speed': uplink.get('max_speed'),  # int/opt
                 'netmask': uplink.get('netmask'),  # str/opt
-                'num_port': uplink['num_port'],  # int
+                'num_port': uplink.get('num_port'),  # int/opt
                 'port_idx': uplink.get('port_idx'),  # int/opt
                 'rx_bytes': uplink['rx_bytes'],  # int
-                'rx_dropped': uplink['rx_dropped'],  # int
-                'rx_errors': uplink['rx_errors'],  # int
-                'rx_multicast': uplink['rx_multicast'],  # int
+                'rx_dropped': uplink.get('rx_dropped'),  # int/opt
+                'rx_errors': uplink.get('rx_errors'),  # int/opt
+                'rx_multicast': uplink.get('rx_multicast'),  # int/opt
                 'rx_packets': uplink['rx_packets'],  # int
-                'speed': uplink['speed'],  # int
+                'speed': uplink.get('speed'),  # int/opt
                 'tx_bytes': uplink['tx_bytes'],  # int,
-                'tx_dropped': uplink['tx_dropped'],  # int
-                'tx_errors': uplink['tx_errors'],  # int
+                'tx_dropped': uplink.get('tx_dropped'),  # int/opt
+                'tx_errors': uplink.get('tx_errors'),  # int/opt
                 'tx_packets': uplink['tx_packets'],  # int
-                'type': uplink['type'],  # str, eg. wire
-                'uplink_device_name': uplink.get('uplink_device_name'),  # str/opt
+                'type': uplink['type'],  # str, eg. wire or wireless
+                'uplink_device_name':
+                    uplink.get('uplink_device_name'),  # str/opt
                 'uplink_mac': uplink.get('uplink_mac'),  # str/opt
-                'uplink_remote_port': uplink.get('uplink_remote_port'),  # int/opt
+                'uplink_remote_port':
+                    uplink.get('uplink_remote_port'),  # int/opt
                 'uplink_source': uplink.get('uplink_source'),  # str/opt
             }
             state['uplink'] = [item]
