@@ -42,7 +42,7 @@ def to_float(val):
 
 
 def get_uplink_name(uplink: dict) -> Optional[str]:
-    return uplink.get('name', uplink.get('mac', uplink.get('ip'))) or None
+    return uplink.get('name') or None
 
 
 async def check_unifidevice(
@@ -174,7 +174,7 @@ async def check_unifidevice(
             }
             state['uplink'] = [item]
         else:
-            logging.warning(f'failed to read uplink `name`; {asset}')
+            logging.info(f'failed to read uplink `name`; {asset}')
 
     if 'port_table' in device:
         mac_set = set()  # check for duplicates
@@ -250,7 +250,7 @@ async def check_unifidevice(
         'num_sta': device.get('num_sta'),  # int
         'ip': device.get('ip'),  # str
         'isolated': device.get('isolated'),  # bool
-        'uplink': get_uplink_name(device.get('uplink', {})),  # str
+        'uplink': get_uplink_name(device.get('uplink', {})),  # str/opt
         'version': device.get('version'),  # str
         'uptime': device.get('uptime'),  # int
         'cpu': to_float(device.get('system-stats', {}).get('cpu')),
