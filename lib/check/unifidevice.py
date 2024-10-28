@@ -197,33 +197,33 @@ async def check_unifidevice(
                 'poe_power': to_float(port.get('poe_power')),  # float/opt
                 'media': port['media'],  # str, e.g. GE
                 'op_mode': port['op_mode'],  # str, e.g. switch
-                'autoneg': port['autoneg'],  # bool
+                'autoneg': port.get('autoneg'),  # bool/opt
                 'speed_caps': port.get('speed_caps'),  # int/opt
                 'forward': port.get('forward'),  # str, e.g. all/opt
                 'enable': port['enable'],  # bool
-                'full_duplex': port['full_duplex'],  # bool
-                'is_uplink': port['is_uplink'],  # bool
-                'up': port['up'],  # bool
+                'full_duplex': port.get('full_duplex'),  # bool/opt
+                'is_uplink': port.get('is_uplink'),  # bool/opt
+                'up': port.get('up'),  # bool/opt
                 'masked': port['masked'],  # bool
-                'flowctrl_rx': port['flowctrl_rx'],  # bool
-                'flowctrl_tx': port['flowctrl_tx'],  # bool
-                'jumbo': port.get('jumbo'),  # bool
-                'speed': port['speed'],  # int  e.g. 100 or 1000
-                'stp_pathcost': port.get('stp_pathcost'),  # int
-                'stp_state': port.get('stp_state'),  # str e.g. forwarding
+                'flowctrl_rx': port.get('flowctrl_rx'),  # bool/opt
+                'flowctrl_tx': port.get('flowctrl_tx'),  # bool/opt
+                'jumbo': port.get('jumbo'),  # bool/opt
+                'speed': port.get('speed'),  # int/opt  e.g. 100 or 1000
+                'stp_pathcost': port.get('stp_pathcost'),  # int/opt
+                'stp_state': port.get('stp_state'),  # str/opt e.g. forwarding
                 'satisfaction': port.get('satisfaction'),  # int/opt
-                'rx_broadcast': port['rx_broadcast'],  # int
-                'rx_bytes': port['rx_bytes'],  # int
-                'rx_dropped': port['rx_dropped'],  # int
-                'rx_errors': port['rx_errors'],  # int
-                'rx_multicast': port['rx_multicast'],  # int
-                'rx_packets': port['rx_packets'],  # int
-                'tx_broadcast': port['tx_broadcast'],  # int
-                'tx_bytes': port['tx_bytes'],  # int
-                'tx_dropped': port['tx_dropped'],  # int
-                'tx_errors': port['tx_errors'],  # int
-                'tx_multicast': port['tx_multicast'],  # int
-                'tx_packets': port['tx_packets'],  # int
+                'rx_broadcast': port.get('rx_broadcast'),  # int/opt
+                'rx_bytes': port.get('rx_bytes'),  # int/opt
+                'rx_dropped': port.get('rx_dropped'),  # int/opt
+                'rx_errors': port.get('rx_errors'),  # int/opt
+                'rx_multicast': port.get('rx_multicast'),  # int/opt
+                'rx_packets': port.get('rx_packets'),  # int/opt
+                'tx_broadcast': port.get('tx_broadcast'),  # int/opt
+                'tx_bytes': port.get('tx_bytes'),  # int/opt
+                'tx_dropped': port.get('tx_dropped'),  # int/opt
+                'tx_errors': port.get('tx_errors'),  # int/opt
+                'tx_multicast': port.get('tx_multicast'),  # int/opt
+                'tx_packets': port.get('tx_packets'),  # int/opt
             })
             for mac in port.get('mac_table', []):
                 if mac['mac'] in mac_set:
