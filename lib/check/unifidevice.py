@@ -6,6 +6,7 @@ from libprobe.asset import Asset
 from libprobe.exceptions import IncompleteResultException
 from libprobe.exceptions import IgnoreResultException
 from lib.unificonn import get_session
+from ..connector import get_connector
 
 
 DEVICE_STATE = {
@@ -63,7 +64,9 @@ async def check_unifidevice(
     session, is_unifi_os = await get_session(asset, asset_config, check_config)
     uri = '/proxy/network/api/s/' if is_unifi_os else '/api/s/'
     url = f'{uri}{quote(site, safe="")}/stat/device/{quote(mac, safe="")}'
-    async with aiohttp.ClientSession(**session) as session:
+    async with aiohttp.ClientSession(
+            connector=get_connector(),
+            **session) as session:
         async with session.get(url, ssl=ssl) as resp:
             resp.raise_for_status()
             data = await resp.json()

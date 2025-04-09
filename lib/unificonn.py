@@ -5,6 +5,7 @@ from typing import Tuple
 from libprobe.asset import Asset
 from libprobe.exceptions import CheckException, IgnoreResultException
 from lib.connection_cache import ConnectionCache
+from .connector import get_connector
 
 
 async def login(is_unify_os: bool, controller: str, port: int, ssl: bool,
@@ -18,7 +19,7 @@ async def login(is_unify_os: bool, controller: str, port: int, ssl: bool,
 
     try:
         uri = '/api/auth/login' if is_unify_os else '/api/login'
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(connector=get_connector()) as session:
             async with session.post(
                 f'https://{controller}:{port}{uri}',
                 json=auth_data,
@@ -37,7 +38,7 @@ async def login(is_unify_os: bool, controller: str, port: int, ssl: bool,
 async def detect_if_unify_os(controller: str, port: int,
                              ssl: bool) -> bool:
     try:
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(connector=get_connector()) as session:
             async with session.head(
                     f'https://{controller}:{port}',
                     ssl=ssl) as resp:
