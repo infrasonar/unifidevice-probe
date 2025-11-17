@@ -56,18 +56,18 @@ async def detect_if_unify_os(controller: str, port: int,
     return False
 
 
-async def get_session(asset: Asset, asset_config: dict,
-                      check_config: dict) -> Tuple[dict, bool]:
+async def get_session(asset: Asset, local_config: dict,
+                      config: dict) -> Tuple[dict, bool]:
 
-    controller = check_config.get('controller')
+    controller = config.get('controller')
     if controller is None:
         msg = 'missing controller in collector configuration'
         raise CheckException(msg)
 
-    port = check_config.get('port', 443)
-    ssl = check_config.get('ssl', False)
-    username = asset_config.get('username')
-    password = asset_config.get('password')
+    port = config.get('port', 443)
+    ssl = config.get('ssl', False)
+    username = local_config.get('username')
+    password = local_config.get('password')
     if username is None or password is None:
         logging.error(f'missing credentials for {asset}')
         raise IgnoreResultException
