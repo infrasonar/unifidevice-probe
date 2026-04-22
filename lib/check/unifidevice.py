@@ -1,6 +1,5 @@
 import aiohttp
 import logging
-from typing import Optional
 from urllib.parse import quote
 from libprobe.asset import Asset
 from libprobe.check import Check
@@ -43,7 +42,7 @@ def to_float(val):
     return float(val)
 
 
-def get_uplink_name(uplink: dict) -> Optional[str]:
+def get_uplink_name(uplink: dict) -> str | None:
     return uplink.get('name') or None
 
 
