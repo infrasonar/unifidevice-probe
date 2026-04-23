@@ -1,2 +1,2 @@
-aiohttp==3.13.15
+aiohttp==3.13.5
 libprobe==2.0.6
