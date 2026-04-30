@@ -1,5 +1,6 @@
 import aiohttp
 import logging
+from typing import Any
 from urllib.parse import quote
 from libprobe.asset import Asset
 from libprobe.check import Check
@@ -24,19 +25,19 @@ DEVICE_STATE = {
 }
 
 
-def uint(val):
+def uint(val: Any) -> int | None:
     if not isinstance(val, int) or val < 0:
         return
     return val
 
 
-def to_int(val):
+def to_int(val: Any) -> int | None:
     if val is None:
         return
     return int(val)
 
 
-def to_float(val):
+def to_float(val: Any) -> float | None:
     if val is None:
         return
     return float(val)
