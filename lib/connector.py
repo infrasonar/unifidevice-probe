@@ -1,10 +1,9 @@
-from typing import Optional
 import aiohttp
 import asyncio
 
 
 def get_connector(
-            loop: Optional[asyncio.AbstractEventLoop] = None
+            loop: asyncio.AbstractEventLoop | None = None
         ) -> aiohttp.TCPConnector:
     if loop is None:
         loop = asyncio.get_running_loop()
