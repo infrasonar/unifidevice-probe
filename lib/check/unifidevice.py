@@ -206,7 +206,7 @@ class CheckUnifiDevice(Check):
                     'autoneg': port.get('autoneg'),  # bool/opt
                     'speed_caps': port.get('speed_caps'),  # int/opt
                     'forward': port.get('forward'),  # str, e.g. all/opt
-                    'enable': port.get('enable'),  # bool (opt?)
+                    'enable': port.get('enable'),  # bool/opt
                     'full_duplex': port.get('full_duplex'),  # bool/opt
                     'is_uplink': port.get('is_uplink'),  # bool/opt
                     'up': port.get('up'),  # bool/opt
