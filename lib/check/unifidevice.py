@@ -198,25 +198,25 @@ class CheckUnifiDevice(Check):
                     'port_idx': port.get('port_idx'),  # int/opt
                     'poe_caps': port.get('poe_caps'),  # int/opt
                     'poe_mode': port.get('poe_mode'),  # str/opt, e.g. auto
-                    'port_poe': port['port_poe'],  # bool
+                    'port_poe': port.get('port_poe'),  # bool (opt?)
                     'poe_good': port.get('poe_good'),  # bool/opt
                     'poe_power': to_float(port.get('poe_power')),  # float/opt
-                    'media': port['media'],  # str, e.g. GE
-                    'op_mode': port['op_mode'],  # str, e.g. switch
+                    'media': port.get('media'),  # str, e.g. GE (opt?)
+                    'op_mode': port.get('op_mode'),  # str, e.g. switch (opt?)
                     'autoneg': port.get('autoneg'),  # bool/opt
                     'speed_caps': port.get('speed_caps'),  # int/opt
                     'forward': port.get('forward'),  # str, e.g. all/opt
-                    'enable': port['enable'],  # bool
+                    'enable': port.get('enable'),  # bool (opt?)
                     'full_duplex': port.get('full_duplex'),  # bool/opt
                     'is_uplink': port.get('is_uplink'),  # bool/opt
                     'up': port.get('up'),  # bool/opt
-                    'masked': port['masked'],  # bool
+                    'masked': port.get('masked'),  # bool (opt?)
                     'flowctrl_rx': port.get('flowctrl_rx'),  # bool/opt
                     'flowctrl_tx': port.get('flowctrl_tx'),  # bool/opt
                     'jumbo': port.get('jumbo'),  # bool/opt
                     'speed': port.get('speed'),  # int/opt  e.g. 100 or 1000
                     'stp_pathcost': port.get('stp_pathcost'),  # int/opt
-                    'stp_state': port.get('stp_state'),  # str/opt
+                    'stp_state': port.get('stp_state'),  # str/opt e.g. forw..
                     'satisfaction': port.get('satisfaction'),  # int/opt
                     'rx_broadcast': port.get('rx_broadcast'),  # int/opt
                     'rx_bytes': port.get('rx_bytes'),  # int/opt
