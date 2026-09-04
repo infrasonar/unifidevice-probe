@@ -83,7 +83,6 @@ class CheckUnifiDevice(Check):
         if len(data['data']) == 0:
             raise CheckException('device not not found')
 
-
         device = data['data'][0]
         state = {}
         radio_complete, vap_complete, port_complete = True, True, True
