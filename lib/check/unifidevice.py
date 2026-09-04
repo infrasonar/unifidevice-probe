@@ -6,7 +6,8 @@ from libprobe.asset import Asset
 from libprobe.check import Check
 from libprobe.exceptions import IncompleteResultException
 from libprobe.exceptions import IgnoreResultException
-from lib.unificonn import get_session
+from libprobe.exceptions import CheckException
+from lib.unificonn import get_credentials, sanity_check
 from ..connector import get_connector
 
 
@@ -54,26 +55,34 @@ class CheckUnifiDevice(Check):
     @staticmethod
     async def run(asset: Asset, local_config: dict, config: dict) -> dict:
 
-        site = config.get('site', 'default')
+        site_name = config.get('site', 'default')
         ssl = config.get('ssl', False)
         mac = config.get('mac')
         if mac in (None, ''):
-            logging.error(f'missing mac address for {asset}')
-            raise IgnoreResultException
+            raise CheckException('missing mac address in config')
         if mac.startswith('?'):
-            logging.error(f'invalid mac address for {asset}')
-            raise IgnoreResultException
+            raise CheckException('invalid mac address in config')
+        credentials = await get_credentials(asset, local_config, config)
 
-        session, is_unifi_os = await get_session(asset, local_config, config)
-        uri = '/proxy/network/api/s/' if is_unifi_os else '/api/s/'
-        url = f'{uri}{quote(site, safe="")}/stat/device/{quote(mac, safe="")}'
-        async with aiohttp.ClientSession(
-                connector=get_connector(),
-                **session) as session:
-            async with session.get(url, ssl=ssl) as resp:
-                resp.raise_for_status()
+        base_url = credentials['base_url']
+        is_unifi_os = credentials['is_unifi_os']
+        cookies = credentials['cookies']
+        headers = credentials['headers']
+
+        site_name = quote(site_name, safe="")
+        mac = quote(mac, safe="")
+        prefix = '/proxy/network' if is_unifi_os else ''
+        url = f"{base_url}{prefix}/api/s/{site_name}/stat/device/{mac}"
+
+        async with aiohttp.ClientSession(cookies=cookies,
+                                         connector=get_connector()) as session:
+            async with session.get(url, headers=headers, ssl=ssl) as resp:
+                await sanity_check(resp, url)
                 data = await resp.json()
-                assert len(data['data']), 'device not not found'
+
+        if len(data['data']) == 0:
+            raise CheckException('device not not found')
+
 
         device = data['data'][0]
         state = {}
